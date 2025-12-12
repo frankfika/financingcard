@@ -1,19 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ResultCard from './components/ResultCard';
 import { SpeakerType, TranslationResult } from './types';
 import { translateBullshit } from './services/geminiService';
 import { DEFAULT_PROMPTS } from './constants';
-import { ArrowRight, Loader2, RefreshCw, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Loader2, RefreshCw, ArrowLeft, ExternalLink, Copy, Check } from 'lucide-react';
+
+// 检测是否在微信内置浏览器中
+const isWeChatBrowser = (): boolean => {
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.includes('micromessenger');
+};
 
 const App: React.FC = () => {
   const [speakerType, setSpeakerType] = useState<SpeakerType>(SpeakerType.FOUNDER);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TranslationResult | null>(null);
+  const [showWeChatTip, setShowWeChatTip] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [visiblePrompts, setVisiblePrompts] = useState<string[]>(() => {
     const all = DEFAULT_PROMPTS[SpeakerType.FOUNDER];
     return [...all].sort(() => Math.random() - 0.5).slice(0, 3);
   });
+
+  useEffect(() => {
+    if (isWeChatBrowser()) {
+      setShowWeChatTip(true);
+    }
+  }, []);
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // fallback for older browsers
+      const input = document.createElement('input');
+      input.value = window.location.href;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const isFounder = speakerType === SpeakerType.FOUNDER;
 
@@ -46,10 +78,52 @@ const App: React.FC = () => {
     setResult(null);
   };
 
+  // 微信提示弹窗
+  const WeChatTipModal = () => (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-[#fffdf5] border border-stone-300 max-w-sm w-full" style={{ boxShadow: '4px 4px 0 #1a1a1a' }}>
+        <div className="h-1 bg-[#1a1a1a]"></div>
+        <div className="p-5 text-center">
+          <ExternalLink className="w-10 h-10 mx-auto mb-3 text-[#1a1a1a]" />
+          <h3 className="text-lg font-black text-[#1a1a1a] mb-2">请在浏览器中打开</h3>
+          <p className="text-sm text-stone-600 mb-4">
+            微信内置浏览器功能受限，请点击右上角「...」选择「在浏览器中打开」以获得完整体验
+          </p>
+          <div className="space-y-2">
+            <button
+              onClick={handleCopyLink}
+              className="w-full py-2.5 font-bold text-[#fffdf5] bg-[#1a1a1a] hover:bg-[#333] transition-all flex items-center justify-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  已复制链接
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  复制链接
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setShowWeChatTip(false)}
+              className="w-full py-2.5 font-bold text-stone-600 bg-transparent border-2 border-stone-300 hover:border-stone-400 transition-all"
+            >
+              继续使用
+            </button>
+          </div>
+        </div>
+        <div className="h-1 bg-[#1a1a1a]"></div>
+      </div>
+    </div>
+  );
+
   // 结果页
   if (result) {
     return (
       <div className="min-h-screen bg-stone-200">
+        {showWeChatTip && <WeChatTipModal />}
         <div className="max-w-lg mx-auto px-4 py-4">
           {/* Back Button */}
           <button
@@ -70,6 +144,7 @@ const App: React.FC = () => {
   // 输入页 - 复古报刊风格
   return (
     <div className="min-h-screen bg-stone-200">
+      {showWeChatTip && <WeChatTipModal />}
       <div className="max-w-lg mx-auto px-4 py-4">
 
         {/* Main Card */}
