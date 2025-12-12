@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VC/Founder Truth Decoder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Fetch Google Fonts CSS and inject as inline style to avoid CORS issues with html-to-image
+      (function() {
+        const fontUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;700&display=swap';
+        fetch(fontUrl)
+          .then(response => response.text())
+          .then(css => {
+            const style = document.createElement('style');
+            style.textContent = css;
+            document.head.appendChild(style);
+          })
+          .catch(err => {
+            console.error('Failed to load fonts:', err);
+            // Fallback to link if fetch fails
+            const link = document.createElement('link');
+            link.href = fontUrl;
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+          });
+      })();
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f0f4f8; /* Light Slate/Blueish Gray */
+        color: #1e293b; /* Slate 800 */
+      }
+      h1, h2, h3, .serif-font {
+        font-family: 'Playfair Display', serif;
+      }
+      .mono-font {
+        font-family: 'Space Grotesk', monospace;
+      }
+      /* Subtle paper texture pattern */
+      .bg-paper-pattern {
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      textarea::-webkit-scrollbar {
+        width: 8px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 4px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; 
+      }
+      
+      /* Smooth Scrolling Danmaku */
+      @keyframes floatLeft {
+        from { transform: translateX(100vw); }
+        to { transform: translateX(-100%); }
+      }
+      
+      .animate-float-left {
+        animation: floatLeft linear infinite;
+        will-change: transform;
+      }
+      
+      .animate-float-left:hover {
+        animation-play-state: paused;
+        z-index: 50;
+      }
+
+      /* Result Card Entrance */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Attention-grabbing pulse for share button */
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7), 0 4px 15px rgba(249, 115, 22, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 12px rgba(249, 115, 22, 0), 0 4px 20px rgba(249, 115, 22, 0.6);
+        }
+      }
+      .animate-pulse-glow {
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+
+      /* Bounce arrow */
+      @keyframes bounce-down {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(4px); }
+      }
+      .animate-bounce-down {
+        animation: bounce-down 1s ease-in-out infinite;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "openai": "https://esm.sh/openai@^4.73.0",
+    "react-qr-code": "https://esm.sh/react-qr-code@2.0.15?deps=react@19.2.3",
+    "html-to-image": "https://esm.sh/html-to-image@1.11.11"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
